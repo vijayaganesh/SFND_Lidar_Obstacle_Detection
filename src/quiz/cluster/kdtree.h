@@ -75,10 +75,10 @@ struct KdTree
 		// Return -1 to check right subtree
 		auto check_range = [x_min, x_max, y_min, y_max](std::vector<float> point, int l) -> int{
 			if(l%2 == 0){
-				if(x_min <= point[0] && x_max >= point[0]){
+				if(point[0] >= x_min && point[0] <= x_max){
 					return 0;
 				}
-				else if(point[0] >= x_min ){
+				else if(point[0] <= x_min ){
 					return -1;
 				}
 				else{
@@ -87,10 +87,10 @@ struct KdTree
 				
 			}
 			else{
-				if(y_min <= point[1] && y_max >= point[1]){
+				if(point[1] >= y_min && point[1] <= y_max){
 					return 0;
 				}
-				else if(point[1] >= y_min ){
+				else if(point[1] <= y_min ){
 					return -1;
 				}
 				else{
