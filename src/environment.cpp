@@ -38,7 +38,7 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
     std::unique_ptr<ProcessPointClouds<pcl::PointXYZI> > processor(new ProcessPointClouds<pcl::PointXYZI>());   
     pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = processor->loadPcd("../src/sensors/data/pcd/data_1/0000000000.pcd");
-    auto clouds = processor->CustomSegmentPlane(inputCloud, 10000, 0.2);
+    auto clouds = processor->CustomSegmentPlane(inputCloud, 50, 0.2);
     renderPointCloud(viewer,clouds.first,"inputCloud");
 
 }
