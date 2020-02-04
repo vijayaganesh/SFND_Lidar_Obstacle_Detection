@@ -30,7 +30,7 @@ class RANSAC
         int max_iterations_;
         float distance_threshold_;
         PointCloudPtr cloud_;
-        pcl::PointIndices findGroundPoints_();
+        pcl::PointIndices::Ptr findGroundPoints_();
 };
 } // namespace sfnd
 

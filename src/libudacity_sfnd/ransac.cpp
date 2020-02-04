@@ -1,4 +1,4 @@
-#include "ransac.h"
+#include "libudacity_sfnd/ransac.h"
 
 template <typename PointT>
 sfnd::RANSAC<PointT>::RANSAC()
@@ -34,6 +34,8 @@ std::pair<typename sfnd::RANSAC<PointT>::PointCloudPtr, typename sfnd::RANSAC<Po
     extract.setNegative(false);
     extract.filter(*inlier_cloud);
 
+    extract.setInputCloud(cloud_);
+    extract.setIndices(inliers);
     extract.setNegative(true);
     extract.filter(*outlier_cloud);
     
@@ -43,10 +45,10 @@ std::pair<typename sfnd::RANSAC<PointT>::PointCloudPtr, typename sfnd::RANSAC<Po
 }
 
 template <typename PointT>
-pcl::PointIndices sfnd::RANSAC<PointT>::findGroundPoints_()
+pcl::PointIndices::Ptr sfnd::RANSAC<PointT>::findGroundPoints_()
 {
     int maxIterations = max_iterations_;
-    pcl::PointIndices ground_indices;
+    pcl::PointIndices::Ptr ground_indices(new pcl::PointIndices);
     std::random_device rd;
     std::mt19937 mt(rd());
 
@@ -137,8 +139,13 @@ pcl::PointIndices sfnd::RANSAC<PointT>::findGroundPoints_()
         float dist = abs(a * cloud_->at(iter).x + b * cloud_->at(iter).y + c * cloud_->at(iter).z + d) / sqrt(a * a + b * b + c * c);
         if (dist <= distance_threshold_)
         {
-            ground_indices.indices.push_back(iter);
+            ground_indices->indices.push_back(iter);
         }
     }
     return ground_indices;
 }
+
+// Dummy function to avoid the linker error associated with templates
+
+template class sfnd::RANSAC<pcl::PointXYZ>;
+template class sfnd::RANSAC<pcl::PointXYZI>;

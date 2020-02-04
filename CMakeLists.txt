@@ -9,7 +9,7 @@ project(playback)
 
 find_package(PCL 1.2 REQUIRED)
 
-include_directories(${PCL_INCLUDE_DIRS})
+include_directories(include ${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
@@ -17,12 +17,9 @@ list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
 
 add_library(
     udacity
-        lib/udacity/euclidean_clustering.cpp
-        lib/udacity/euclidean_clustering.h
-        lib/udacity/kdtree.cpp
-        lib/udacity/kdtree.h
-        lib/udacity/ransac.h
-        lib/udacity/ransac.cpp
+        src/libudacity_sfnd/euclidean_clustering.cpp
+        src/libudacity_sfnd/kdtree.cpp
+        src/libudacity_sfnd/ransac.cpp
 )
 
 target_link_libraries(udacity ${PCL_INCLUDE_DIRS})

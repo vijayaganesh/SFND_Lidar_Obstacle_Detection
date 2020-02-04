@@ -38,7 +38,8 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
     std::unique_ptr<ProcessPointClouds<pcl::PointXYZI> > processor(new ProcessPointClouds<pcl::PointXYZI>());   
     pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = processor->loadPcd("../src/sensors/data/pcd/data_1/0000000000.pcd");
-    renderPointCloud(viewer,inputCloud,"inputCloud");
+    auto clouds = processor->CustomSegmentPlane(inputCloud, 10000, 0.2);
+    renderPointCloud(viewer,clouds.first,"inputCloud");
 
 }
 
@@ -109,7 +110,8 @@ int main (int argc, char** argv)
     pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     CameraAngle setAngle = XY;
     initCamera(setAngle, viewer);
-    simpleHighway(viewer);
+    // simpleHighway(viewer);
+    cityBlock(viewer);
 
     while (!viewer->wasStopped ())
     {
