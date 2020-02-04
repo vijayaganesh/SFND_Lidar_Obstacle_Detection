@@ -3,6 +3,7 @@
 
 #include <unordered_set>
 #include <random>
+#include <chrono>
 
 #include "pcl/point_cloud.h"
 #include "pcl/PointIndices.h"

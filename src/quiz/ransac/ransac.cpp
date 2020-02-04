@@ -208,17 +208,17 @@ std::unordered_set<int> RansacPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, i
 		current_count = 0;
 	}
 
-	x1 = cloud->at(i).x;
-	x2 = cloud->at(j).x;
-	x3 = cloud->at(k).x;
+	x1 = cloud->at(best_i).x;
+	x2 = cloud->at(best_j).x;
+	x3 = cloud->at(best_k).x;
 
-	y1 = cloud->at(i).y;
-	y2 = cloud->at(j).y;
-	y3 = cloud->at(k).y;
+	y1 = cloud->at(best_i).y;
+	y2 = cloud->at(best_j).y;
+	y3 = cloud->at(best_k).y;
 
-	z1 = cloud->at(i).z;
-	z2 = cloud->at(j).z;
-	z3 = cloud->at(k).z;
+	z1 = cloud->at(best_i).z;
+	z2 = cloud->at(best_j).z;
+	z3 = cloud->at(best_k).z;
 
 	a = (y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1);
 	b = (z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1);

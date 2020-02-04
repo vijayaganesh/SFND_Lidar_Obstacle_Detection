@@ -37,10 +37,13 @@ std::vector<Car> initHighway(bool renderScene, pcl::visualization::PCLVisualizer
 void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
     std::unique_ptr<ProcessPointClouds<pcl::PointXYZI> > processor(new ProcessPointClouds<pcl::PointXYZI>());   
-    pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = processor->loadPcd("../src/sensors/data/pcd/data_1/0000000000.pcd");
-    auto clouds = processor->CustomSegmentPlane(inputCloud, 50, 0.2);
-    renderPointCloud(viewer,clouds.first,"inputCloud");
-
+    pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = processor->loadPcd("../src/sensors/data/pcd/data_1/0000000012.pcd");
+    auto filtered_cloud = processor->FilterCloud(inputCloud, 0.3, Eigen::Vector4f(-75,-6,-3,1), Eigen::Vector4f(75,8,20,1));
+    auto lidar_chassis = processor->SegmentLidarChassis(filtered_cloud, Eigen::Vector4f(-2,-2,-2,1), Eigen::Vector4f(3,2,2,1));
+    auto clouds = processor->CustomSegmentPlane(filtered_cloud, 50, 0.25);
+    renderPointCloud(viewer,clouds.first,"Obstacles", Color(0,1,0));
+    renderPointCloud(viewer,clouds.second,"Road", Color(1,0,0));
+    renderBox(viewer, lidar_chassis, 1, Color(0.4,0.3, 0.9));
 }
 
 void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
