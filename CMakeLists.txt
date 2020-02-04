@@ -15,8 +15,20 @@ add_definitions(${PCL_DEFINITIONS})
 list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
 
 
+add_library(
+    udacity
+        lib/udacity/euclidean_clustering.cpp
+        lib/udacity/euclidean_clustering.h
+        lib/udacity/kdtree.cpp
+        lib/udacity/kdtree.h
+        lib/udacity/ransac.h
+        lib/udacity/ransac.cpp
+)
+
+target_link_libraries(udacity ${PCL_INCLUDE_DIRS})
+
 add_executable (environment src/environment.cpp src/render/render.cpp src/processPointClouds.cpp)
-target_link_libraries (environment ${PCL_LIBRARIES})
+target_link_libraries (environment udacity ${PCL_LIBRARIES})
 
 
 

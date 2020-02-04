@@ -45,13 +45,18 @@ std::pair<typename sfnd::RANSAC<PointT>::PointCloudPtr, typename sfnd::RANSAC<Po
 template <typename PointT>
 pcl::PointIndices sfnd::RANSAC<PointT>::findGroundPoints_()
 {
-    maxIterations = max_iterations_;
+    int maxIterations = max_iterations_;
     pcl::PointIndices ground_indices;
     std::random_device rd;
     std::mt19937 mt(rd());
 
     int i = 0, j = 0, k = 0;
-    size_t cloud_size = cloud->size();
+    size_t cloud_size = cloud_->size();
+
+    if(cloud_size == 0){
+        return ground_indices;
+    }
+
     std::uniform_int_distribution<int> dist(0, cloud_size);
     int best_count = 0, current_count = 0;
     int best_i = 0, best_j = 0, best_k = 0;
@@ -73,24 +78,24 @@ pcl::PointIndices sfnd::RANSAC<PointT>::findGroundPoints_()
             k = dist(mt) % cloud_size;
         }
 
-        x1 = cloud->at(i).x;
-        x2 = cloud->at(j).x;
-        x3 = cloud->at(k).x;
+        x1 = cloud_->at(i).x;
+        x2 = cloud_->at(j).x;
+        x3 = cloud_->at(k).x;
 
-        y1 = cloud->at(i).y;
-        y2 = cloud->at(j).y;
-        y3 = cloud->at(k).y;
+        y1 = cloud_->at(i).y;
+        y2 = cloud_->at(j).y;
+        y3 = cloud_->at(k).y;
 
-        z1 = cloud->at(i).z;
-        z2 = cloud->at(j).z;
-        z3 = cloud->at(k).z;
+        z1 = cloud_->at(i).z;
+        z2 = cloud_->at(j).z;
+        z3 = cloud_->at(k).z;
 
         a = (y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1);
         b = (z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1);
         c = (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
         d = -(a * x1 + b * y1 + c * z1);
 
-        for (auto &point : *cloud)
+        for (auto &point : *cloud_)
         {
             float dist = abs(a * point.x + b * point.y + c * point.z + d);
             dist = dist / sqrt(a * a + b * b + c * c);
@@ -110,17 +115,17 @@ pcl::PointIndices sfnd::RANSAC<PointT>::findGroundPoints_()
         current_count = 0;
     }
 
-    x1 = cloud->at(i).x;
-    x2 = cloud->at(j).x;
-    x3 = cloud->at(k).x;
+    x1 = cloud_->at(i).x;
+    x2 = cloud_->at(j).x;
+    x3 = cloud_->at(k).x;
 
-    y1 = cloud->at(i).y;
-    y2 = cloud->at(j).y;
-    y3 = cloud->at(k).y;
+    y1 = cloud_->at(i).y;
+    y2 = cloud_->at(j).y;
+    y3 = cloud_->at(k).y;
 
-    z1 = cloud->at(i).z;
-    z2 = cloud->at(j).z;
-    z3 = cloud->at(k).z;
+    z1 = cloud_->at(i).z;
+    z2 = cloud_->at(j).z;
+    z3 = cloud_->at(k).z;
 
     a = (y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1);
     b = (z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1);
@@ -129,8 +134,8 @@ pcl::PointIndices sfnd::RANSAC<PointT>::findGroundPoints_()
 
     for (int iter = 0; iter < cloud_size; iter++)
     {
-        float dist = abs(a * cloud->at(iter).x + b * cloud->at(iter).y + c * cloud->at(iter).z + d) / sqrt(a * a + b * b + c * c);
-        if (dist <= distanceTol)
+        float dist = abs(a * cloud_->at(iter).x + b * cloud_->at(iter).y + c * cloud_->at(iter).z + d) / sqrt(a * a + b * b + c * c);
+        if (dist <= distance_threshold_)
         {
             ground_indices.indices.push_back(iter);
         }

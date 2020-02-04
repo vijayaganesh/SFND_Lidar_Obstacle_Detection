@@ -6,6 +6,7 @@
 
 #include "pcl/point_cloud.h"
 #include "pcl/PointIndices.h"
+#include "pcl/filters/extract_indices.h"
 
 
 namespace sfnd
