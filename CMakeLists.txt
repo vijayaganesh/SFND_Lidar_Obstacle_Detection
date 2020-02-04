@@ -9,14 +9,23 @@ project(playback)
 
 find_package(PCL 1.2 REQUIRED)
 
-include_directories(${PCL_INCLUDE_DIRS})
+include_directories(include ${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
 
 
+add_library(
+    udacity
+        src/libudacity_sfnd/euclidean_clustering.cpp
+        src/libudacity_sfnd/kdtree.cpp
+        src/libudacity_sfnd/ransac.cpp
+)
+
+target_link_libraries(udacity ${PCL_INCLUDE_DIRS})
+
 add_executable (environment src/environment.cpp src/render/render.cpp src/processPointClouds.cpp)
-target_link_libraries (environment ${PCL_LIBRARIES})
+target_link_libraries (environment udacity ${PCL_LIBRARIES})
 
 
 

@@ -27,16 +27,57 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(ty
     // Time segmentation process
     auto startTime = std::chrono::steady_clock::now();
 
-    // TODO:: Fill in the function to do voxel grid point reduction and region based filtering
+    typename pcl::PointCloud<PointT>::Ptr filtered_cloud(new pcl::PointCloud<PointT>());
+
+
+    pcl::CropBox<PointT> cropper;
+    cropper.setInputCloud(cloud);
+    cropper.setMin(minPoint);
+    cropper.setMax(maxPoint);    
+    cropper.filter(*filtered_cloud);
+
+    pcl::VoxelGrid<PointT> grid;
+    grid.setInputCloud(filtered_cloud);
+    grid.setLeafSize(filterRes, filterRes, filterRes);
+    grid.filter(*filtered_cloud);
 
     auto endTime = std::chrono::steady_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
     std::cout << "filtering took " << elapsedTime.count() << " milliseconds" << std::endl;
 
-    return cloud;
+    return filtered_cloud;
 
 }
 
+template<typename PointT>
+Box ProcessPointClouds<PointT>::SegmentLidarChassis(typename pcl::PointCloud<PointT>::Ptr cloud, Eigen::Vector4f minPoint, Eigen::Vector4f maxPoint){
+
+    typename pcl::PointCloud<PointT>::Ptr filtered_cloud(new pcl::PointCloud<PointT>);
+    pcl::CropBox<PointT> cropper;
+    cropper.setInputCloud(cloud);
+    cropper.setMin(minPoint);
+    cropper.setMax(maxPoint);  
+    cropper.filter(*filtered_cloud);
+
+    std::cout<<"lidar size: "<<filtered_cloud->points.size()<<std::endl;
+
+    cropper.setNegative(true);
+    cropper.filter(*cloud);
+
+    PointT corner_1, corner_2;
+    pcl::getMinMax3D(*filtered_cloud, corner_1, corner_2);
+    Box lidar_chassis;
+    lidar_chassis.x_min = corner_1.x;
+    lidar_chassis.y_min = corner_1.y;
+    lidar_chassis.z_min = corner_1.z;
+    lidar_chassis.x_max = corner_2.x;
+    lidar_chassis.y_max = corner_2.y;
+    lidar_chassis.z_max = corner_2.z;
+
+    return lidar_chassis;
+
+
+}
 
 template<typename PointT>
 std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::SeparateClouds(pcl::PointIndices::Ptr inliers, typename pcl::PointCloud<PointT>::Ptr cloud) 
@@ -59,6 +100,21 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
     return segResult;
 }
 
+template<typename PointT>
+std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::CustomSegmentPlane(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold)
+{
+    // Time segmentation process
+    auto startTime = std::chrono::steady_clock::now();
+    sfnd::RANSAC<PointT> ransac(cloud, maxIterations, distanceThreshold);
+    auto result = ransac.segmentPlane();
+
+    auto endTime = std::chrono::steady_clock::now();
+    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+    std::cout << "plane segmentation took " << elapsedTime.count() << " milliseconds" << std::endl;
+
+    return result;
+
+}
 
 template<typename PointT>
 std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::SegmentPlane(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold)
@@ -86,6 +142,7 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 
     std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> segResult = SeparateClouds(inliers,cloud);
     return segResult;
+    
 }
 
 
