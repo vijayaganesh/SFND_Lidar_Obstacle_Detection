@@ -18,7 +18,7 @@ sfnd::KDTree<PointT>::KDTree()
 template <typename PointT>
 void sfnd::KDTree<PointT>::insert(PointT point, int index)
 {
-    insert_helper(root, point, id, 0);
+    insert_helper(root, point, index, 0);
 }
 
 template <typename PointT>
@@ -34,7 +34,7 @@ std::vector<int> sfnd::KDTree<PointT>::search(PointT target, float distance_tole
     float z_min = target.z - distance_tolerance;
     float z_max = target.z + distance_tolerance;
 
-    std::queue < std::pair<std::shared_ptr<Node<PointT>, int>> to_go_queue;
+    std::queue < std::pair<std::shared_ptr<Node<PointT>>, int>> to_go_queue;
 
     while (!to_go_queue.empty())
     {
