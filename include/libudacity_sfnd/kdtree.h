@@ -4,6 +4,7 @@
 #include <queue>
 #include <utility>
 #include "pcl/point_cloud.h"
+#include "pcl/point_types.h"
 namespace sfnd
 {
 
@@ -31,12 +32,14 @@ struct KDTree
 
     std::vector<int> search(PointT target, float distance_tolerance);
 
+    static std::shared_ptr<KDTree<PointT> > pointCloudToKDTree(const typename pcl::PointCloud<PointT>::Ptr &cloud);
+
 private:
-    void insert_helper_(std::shared_ptr<Node<PointT>> &current, PointT point, int index, int level);
+    void insertHelper_(std::shared_ptr<Node<PointT>> &current, PointT point, int index, int level);
 
-    int check_range_(PointT point, int level, float x_min, float x_max, float y_min, float y_max, float z_min, float z_max);
+    int checkRange_(PointT point, int level, float x_min, float x_max, float y_min, float y_max, float z_min, float z_max);
 
-    bool is_proximal_(PointT point, PointT target, float distance_tolerance, float x_min, float x_max, float y_min, float y_max, float z_min, float z_max);
+    bool isProximal_(PointT point, PointT target, float distance_tolerance, float x_min, float x_max, float y_min, float y_max, float z_min, float z_max);
 };
 } // namespace sfnd
 

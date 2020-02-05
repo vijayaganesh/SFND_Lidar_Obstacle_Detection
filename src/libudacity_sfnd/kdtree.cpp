@@ -18,7 +18,7 @@ sfnd::KDTree<PointT>::KDTree()
 template <typename PointT>
 void sfnd::KDTree<PointT>::insert(PointT point, int index)
 {
-    insert_helper(root, point, index, 0);
+    insertHelper_(root, point, index, 0);
 }
 
 template <typename PointT>
@@ -34,7 +34,7 @@ std::vector<int> sfnd::KDTree<PointT>::search(PointT target, float distance_tole
     float z_min = target.z - distance_tolerance;
     float z_max = target.z + distance_tolerance;
 
-    std::queue < std::pair<std::shared_ptr<Node<PointT>>, int>> to_go_queue;
+    std::queue<std::pair<std::shared_ptr<Node<PointT>>, int>> to_go_queue;
 
     while (!to_go_queue.empty())
     {
@@ -48,12 +48,12 @@ std::vector<int> sfnd::KDTree<PointT>::search(PointT target, float distance_tole
             continue;
         }
 
-        if (is_proximal_(current->point, target, distance_tolerance, x_min, x_max, y_min, y_max, z_min, z_max))
+        if (isProximal_(current->point, target, distance_tolerance, x_min, x_max, y_min, y_max, z_min, z_max))
         {
-            indices.push_back(current->id);
+            indices.push_back(current->index);
         }
 
-        auto range = check_range_(current->point, level, x_min, x_max, y_min, y_max, z_min, z_max);
+        int range = checkRange_(current->point, level, x_min, x_max, y_min, y_max, z_min, z_max);
 
         if (range == 1)
         {
@@ -74,7 +74,7 @@ std::vector<int> sfnd::KDTree<PointT>::search(PointT target, float distance_tole
 }
 
 template <typename PointT>
-int sfnd::KDTree<PointT>::check_range_(PointT point, int level,
+int sfnd::KDTree<PointT>::checkRange_(PointT point, int level,
                                        float x_min, float x_max,
                                        float y_min, float y_max,
                                        float z_min, float z_max)
@@ -130,7 +130,7 @@ int sfnd::KDTree<PointT>::check_range_(PointT point, int level,
 }
 
 template <typename PointT>
-bool sfnd::KDTree<PointT>::is_proximal_(PointT point,
+bool sfnd::KDTree<PointT>::isProximal_(PointT point,
                                         PointT target,
                                         float distance_tolerance,
                                         float x_min, float x_max,
@@ -155,11 +155,11 @@ bool sfnd::KDTree<PointT>::is_proximal_(PointT point,
 }
 
 template <typename PointT>
-void sfnd::KDTree<PointT>::insert_helper_(std::shared_ptr<Node<PointT>> &current, PointT point, int index, int level)
+void sfnd::KDTree<PointT>::insertHelper_(std::shared_ptr<Node<PointT>> &current, PointT point, int index, int level)
 {
     if (current.use_count() == 0)
     {
-        current.reset(point, index);
+        current.reset(new Node<PointT>(point, index));
     }
     else
     {
@@ -167,34 +167,53 @@ void sfnd::KDTree<PointT>::insert_helper_(std::shared_ptr<Node<PointT>> &current
         {
             if (point.x <= current->point.x)
             {
-                insert_helper_(current->left, point, index, ++level);
+                insertHelper_(current->left, point, index, ++level);
             }
             else
             {
-                insert_helper_(current->right, point, index, ++level);
+                insertHelper_(current->right, point, index, ++level);
             }
         }
         else if (level % 3 == 1)
         {
             if (point.y <= current->point.y)
             {
-                insert_helper_(current->left, point, index, ++level);
+                insertHelper_(current->left, point, index, ++level);
             }
             else
             {
-                insert_helper_(current->right, point, index, ++level);
+                insertHelper_(current->right, point, index, ++level);
             }
         }
         else
         {
             if (point.z <= current->point.z)
             {
-                insert_helper_(current->left, point, index, ++level);
+                insertHelper_(current->left, point, index, ++level);
             }
             else
             {
-                insert_helper_(current->right, point, index, ++level);
+                insertHelper_(current->right, point, index, ++level);
             }
         }
     }
 }
+
+template <typename PointT>
+std::shared_ptr<sfnd::KDTree<PointT>> sfnd::KDTree<PointT>::pointCloudToKDTree(const typename pcl::PointCloud<PointT>::Ptr &cloud)
+{
+
+    std::shared_ptr<KDTree<PointT>> kdtree(new KDTree<PointT>);
+    size_t cloud_size = cloud->points.size();
+
+    for (int i = 0; i < cloud_size; i++)
+    {
+        kdtree->insert(cloud->points[i], i);
+    }
+
+    return kdtree;
+}
+
+
+template class sfnd::KDTree<pcl::PointXYZ>;
+template class sfnd::KDTree<pcl::PointXYZI>;
