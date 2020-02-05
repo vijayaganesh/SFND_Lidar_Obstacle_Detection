@@ -19,6 +19,7 @@
 #include <chrono>
 #include "render/box.h"
 #include "libudacity_sfnd/ransac.h"
+#include "libudacity_sfnd/euclidean_clustering.h"
 
 template <typename PointT>
 class ProcessPointClouds
@@ -42,6 +43,8 @@ public:
     Box SegmentLidarChassis(typename pcl::PointCloud<PointT>::Ptr cloud, Eigen::Vector4f minPoint, Eigen::Vector4f maxPoint);
 
     std::vector<typename pcl::PointCloud<PointT>::Ptr> Clustering(typename pcl::PointCloud<PointT>::Ptr cloud, float clusterTolerance, int minSize, int maxSize);
+
+    std::unique_ptr<std::vector<typename pcl::PointCloud<PointT>::Ptr>> CustomClustering(typename pcl::PointCloud<PointT>::Ptr cloud, float clusterTolerance, int minSize, int maxSize);
 
     Box BoundingBox(typename pcl::PointCloud<PointT>::Ptr cluster);
 
