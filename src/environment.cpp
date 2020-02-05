@@ -42,11 +42,11 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr &viewer,
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(0.0, 1.0);
-    auto filtered_cloud = processor->FilterCloud(input_cloud, 0.3, Eigen::Vector4f(-75, -6, -3, 1), Eigen::Vector4f(75, 8, 20, 1));
-    auto lidar_chassis = processor->SegmentLidarChassis(filtered_cloud, Eigen::Vector4f(-2, -2, -2, 1), Eigen::Vector4f(3, 2, 0, 1));
+    auto filtered_cloud = processor->FilterCloud(input_cloud, 0.2, Eigen::Vector4f(-75, -6, -3, 1), Eigen::Vector4f(75, 7, 20, 1));
+    auto lidar_chassis = processor->SegmentLidarChassis(filtered_cloud, Eigen::Vector4f(-1.35, -1.5, -1, 1), Eigen::Vector4f(2.6, 1.5, -0.4, 1));
     auto clouds = processor->CustomSegmentPlane(filtered_cloud, 50, 0.25);
 
-    auto obstacle_clusters = processor->CustomClustering(clouds.second, 1.2, 10, 1000);
+    auto obstacle_clusters = processor->CustomClustering(clouds.second, 1, 10, 10000);
     int cluster_index = 0;
     for (auto &cluster : *obstacle_clusters)
     {
@@ -80,7 +80,7 @@ void cityScene(pcl::visualization::PCLVisualizer::Ptr &viewer)
         streamIterator++;
         if (streamIterator == stream.end())
             streamIterator = stream.begin();
-
+        
         viewer->spinOnce();
     }
 }
