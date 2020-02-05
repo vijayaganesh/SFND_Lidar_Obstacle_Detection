@@ -76,7 +76,6 @@ Box ProcessPointClouds<PointT>::SegmentLidarChassis(typename pcl::PointCloud<Poi
 
     return lidar_chassis;
 
-
 }
 
 template<typename PointT>
