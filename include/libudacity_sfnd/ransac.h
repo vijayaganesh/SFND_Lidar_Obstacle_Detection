@@ -6,6 +6,7 @@
 #include <chrono>
 
 #include "pcl/point_cloud.h"
+#include "pcl/point_types.h"
 #include "pcl/PointIndices.h"
 #include "pcl/filters/extract_indices.h"
 
