@@ -34,13 +34,11 @@ std::unique_ptr<std::vector<typename pcl::PointCloud<PointT>::Ptr>> sfnd::Euclid
 
             clusterHelper_(cluster, i, visited);
 
-            // std::cout<<"Cluster Size: "<<cluster->points.size()<<std::endl;
-
             if (cluster->points.size() >= min_points_ && cluster->points.size() <= max_points_)
                 clusters->push_back(cluster);
         }
     }
-    
+
     return clusters;
 }
 

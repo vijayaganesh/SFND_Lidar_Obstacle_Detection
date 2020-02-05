@@ -54,8 +54,6 @@ Box ProcessPointClouds<PointT>::SegmentLidarChassis(typename pcl::PointCloud<Poi
     cropper.setMax(maxPoint);
     cropper.filter(*filtered_cloud);
 
-    std::cout << "lidar size: " << filtered_cloud->points.size() << std::endl;
-
     cropper.setNegative(true);
     cropper.filter(*cloud);
 
@@ -185,8 +183,12 @@ template <typename PointT>
                                                                    int minSize,
                                                                    int maxSize)
 {
+    auto startTime = std::chrono::steady_clock::now();
     sfnd::EuclideanClustering<PointT> clusterer(cloud, minSize, maxSize, clusterTolerance);
 
+    auto endTime = std::chrono::steady_clock::now();
+    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+    std::cout << "clustering took " << elapsedTime.count() << " milliseconds"<< std::endl;
     return clusterer.getClusterClouds();
 
 }

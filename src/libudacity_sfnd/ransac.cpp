@@ -29,9 +29,6 @@ std::pair<typename sfnd::RANSAC<PointT>::PointCloudPtr, typename sfnd::RANSAC<Po
 
     pcl::ExtractIndices<PointT> extract;
 
-    std::cout<<"cloud size\n";
-    std::cout<<cloud_->points.size()<<std::endl;
-
     extract.setInputCloud(cloud_);
     extract.setIndices(inliers);
     extract.setNegative(false);
@@ -114,8 +111,6 @@ pcl::PointIndices::Ptr sfnd::RANSAC<PointT>::findGroundPoints_()
 
     auto endTime = std::chrono::steady_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
-    std::cout << "Evaluation took " << elapsedTime.count() << " milliseconds" << std::endl;
-
 
     startTime = std::chrono::steady_clock::now();
 
@@ -147,7 +142,6 @@ pcl::PointIndices::Ptr sfnd::RANSAC<PointT>::findGroundPoints_()
 
     endTime = std::chrono::steady_clock::now();
     elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
-    std::cout << "Revaluation took " << elapsedTime.count() << " milliseconds" << std::endl;
 
     return ground_indices;
 }
