@@ -36,14 +36,27 @@ std::vector<Car> initHighway(bool renderScene, pcl::visualization::PCLVisualizer
 
 void cityBlock(pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
+    std::random_device rd; 
+    std::mt19937 gen(rd()); 
+    std::uniform_real_distribution<> dis(0.0, 1.0);
     std::unique_ptr<ProcessPointClouds<pcl::PointXYZI> > processor(new ProcessPointClouds<pcl::PointXYZI>());   
     pcl::PointCloud<pcl::PointXYZI>::Ptr inputCloud = processor->loadPcd("../src/sensors/data/pcd/data_1/0000000012.pcd");
     auto filtered_cloud = processor->FilterCloud(inputCloud, 0.3, Eigen::Vector4f(-75,-6,-3,1), Eigen::Vector4f(75,8,20,1));
     auto lidar_chassis = processor->SegmentLidarChassis(filtered_cloud, Eigen::Vector4f(-2,-2,-2,1), Eigen::Vector4f(3,2,2,1));
     auto clouds = processor->CustomSegmentPlane(filtered_cloud, 50, 0.25);
-    renderPointCloud(viewer,clouds.first,"Obstacles", Color(0,1,0));
-    renderPointCloud(viewer,clouds.second,"Road", Color(1,0,0));
-    renderBox(viewer, lidar_chassis, 1, Color(0.4,0.3, 0.9));
+
+    auto obstacle_clusters = processor->CustomClustering(clouds.second, 0.54, 10, 1000);
+    // renderPointCloud(viewer,clouds.second,"Obstacles", Color(1,0,0));
+    int cluster_index = 0;
+    for (auto &cluster: *obstacle_clusters){
+        Box box = processor->BoundingBox(cluster);
+        renderBox(viewer, box, cluster_index, Color(dis(gen), dis(gen), dis(gen)));
+        renderPointCloud(viewer, cluster, std::to_string(cluster_index), Color(dis(gen), dis(gen), dis(gen)));
+        cluster_index++;
+    }
+
+    renderPointCloud(viewer,clouds.first,"Road", Color(0,1,0));
+    renderBox(viewer, lidar_chassis, cluster_index, Color(0.4,0.3, 0.9));
 }
 
 void simpleHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)

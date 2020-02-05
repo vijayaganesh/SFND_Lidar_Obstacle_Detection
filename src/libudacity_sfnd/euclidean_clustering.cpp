@@ -9,8 +9,10 @@ sfnd::EuclideanClustering<PointT>::EuclideanClustering() : cloud_(new typename p
 template <typename PointT>
 sfnd::EuclideanClustering<PointT>::EuclideanClustering(typename pcl::PointCloud<PointT>::Ptr &cloud,
                                                        int min_points,
+                                                       int max_points,
                                                        float distance_tolerance) : cloud_(cloud),
                                                                                    min_points_(min_points),
+                                                                                   max_points_(max_points),
                                                                                    distance_tolerance_(distance_tolerance)
 {
     kdtree_ = sfnd::KDTree<PointT>::pointCloudToKDTree(cloud_);
@@ -32,9 +34,13 @@ std::unique_ptr<std::vector<typename pcl::PointCloud<PointT>::Ptr>> sfnd::Euclid
 
             clusterHelper_(cluster, i, visited);
 
-            clusters->push_back(cluster);
+            // std::cout<<"Cluster Size: "<<cluster->points.size()<<std::endl;
+
+            if (cluster->points.size() >= min_points_ && cluster->points.size() <= max_points_)
+                clusters->push_back(cluster);
         }
     }
+    
     return clusters;
 }
 

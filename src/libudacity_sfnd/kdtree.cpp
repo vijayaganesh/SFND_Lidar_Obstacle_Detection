@@ -36,6 +36,8 @@ std::vector<int> sfnd::KDTree<PointT>::search(PointT target, float distance_tole
 
     std::queue<std::pair<std::shared_ptr<Node<PointT>>, int>> to_go_queue;
 
+    to_go_queue.push(std::make_pair(root, 0));
+
     while (!to_go_queue.empty())
     {
         auto entry = to_go_queue.front();
@@ -68,6 +70,7 @@ std::vector<int> sfnd::KDTree<PointT>::search(PointT target, float distance_tole
         {
             to_go_queue.push(std::make_pair(current->right, ++level));
         }
+        
     }
 
     return indices;
