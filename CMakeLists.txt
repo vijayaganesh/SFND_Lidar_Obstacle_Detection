@@ -20,7 +20,7 @@ add_library(
         src/libudacity_sfnd/euclidean_clustering.cpp
         src/libudacity_sfnd/kdtree.cpp
         src/libudacity_sfnd/ransac.cpp
-        src/libudacity_sfnd/oriented_bounding_box.cpp
+        # src/libudacity_sfnd/oriented_bounding_box.cpp
 )
 
 target_link_libraries(udacity ${PCL_INCLUDE_DIRS})
